@@ -1,0 +1,8 @@
+django==3.2.13
+django-environ==0.8.1
+requests==2.27.1
+django-extensions==3.1.5
+ipython==7.16.3
+channels==3.0.4
+channels-redis==3.3.1
+python-magic==0.4.25

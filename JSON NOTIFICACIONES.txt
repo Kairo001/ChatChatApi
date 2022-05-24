@@ -1,0 +1,217 @@
+######## RECIBIR MENSAJE DE TEXTO ########
+{
+  "messages": [
+    {
+      "id": "false_573134614219@c.us_3EB08A1D9008DF640B73",
+      "body": "Quisiera saber cu\u00e1l es el Json de recepci\u00f3n de mensaje de texto.",
+      "fromMe": false,
+      "self": 1,
+      "isForwarded": 0,
+      "author": "573134614219@c.us",
+      "time": 1651176160,
+      "chatId": "573134614219@c.us",
+      "messageNumber": 138,
+      "type": "chat",
+      "senderName": "Albeiro N\u00fa\u00f1ez",
+      "caption": null,
+      "quotedMsgBody": null,
+      "quotedMsgId": null,
+      "quotedMsgType": null,
+      "metadata": null,
+      "ack": null,
+      "chatName": "+57 313 4614219"
+    }
+  ],
+  "instanceId": "231311"
+}
+HTTP POST /webhook/ 200 [0.02, 127.0.0.1:36728]
+
+######## RECIBIR MENSAJE DE VOZ ########
+{
+  "messages": [
+    {
+      "id": "false_573134614219@c.us_3EB058C0E6893520C99E",
+      "body": "https://s3.eu-central-1.wasabisys.com/incoming-chat-api/2022/4/28/231311/098376ea-ca40-4e00-8d2c-23163c3ef23b.oga",
+      "fromMe": false,
+      "self": 1,
+      "isForwarded": 0,
+      "author": "573134614219@c.us",
+      "time": 1651176490,
+      "chatId": "573134614219@c.us",
+      "messageNumber": 139,
+      "type": "ptt",
+      "senderName": "Albeiro N\u00fa\u00f1ez",
+      "caption": null,
+      "quotedMsgBody": null,
+      "quotedMsgId": null,
+      "quotedMsgType": null,
+      "metadata": null,
+      "ack": null,
+      "chatName": "+57 313 4614219"
+    }
+  ],
+  "instanceId": "231311"
+}
+HTTP POST /webhook/ 200 [0.00, 127.0.0.1:36734]
+
+{
+  "messages": [
+    {
+      "id": "false_573134614219@c.us_3EB015DC8A56AA40930A",
+      "body": "https://s3.eu-central-1.wasabisys.com/incoming-chat-api/2022/4/28/231311/49e28c1a-dde3-4a80-845b-c2cb6f465944.jpeg",
+      "fromMe": false,
+      "self": 1,
+      "isForwarded": 0,
+      "author": "573134614219@c.us",
+      "time": 1651176713,
+      "chatId": "573134614219@c.us",
+      "messageNumber": 140,
+      "type": "image",
+      "senderName": "Albeiro N\u00fa\u00f1ez",
+      "caption": null,
+      "quotedMsgBody": null,
+      "quotedMsgId": null,
+      "quotedMsgType": null,
+      "metadata": null,
+      "ack": null,
+      "chatName": "+57 313 4614219"
+    }
+  ],
+  "instanceId": "231311"
+}
+HTTP POST /webhook/ 200 [0.00, 127.0.0.1:36878]
+
+######## RECIBIR MENSAJE DE TEXTO CON IMAGEN RESPONDIENDO A OTRO MENSAJE ########
+{
+  "messages": [
+    {
+      "id": "false_573134614219@c.us_3EB05E09A7E861EF8E7A",
+      "body": "https://s3.eu-central-1.wasabisys.com/incoming-chat-api/2022/4/28/231311/d1f79d78-36a1-4b76-8298-9d4da4dd7bd9.jpeg",
+      "fromMe": false,
+      "self": 1,
+      "isForwarded": null,
+      "author": "573134614219@c.us",
+      "time": 1651176849,
+      "chatId": "573134614219@c.us",
+      "messageNumber": 141,
+      "type": "image",
+      "senderName": "Albeiro N\u00fa\u00f1ez",
+      "caption": "Prueba de enviar imagen con texto respondiendo a un mensaje.",
+      "quotedMsgBody": "Hola, buenas tardes.",
+      "quotedMsgId": "false_573134614219@c.us_3EB02FD3CC7E36A43BAE",
+      "quotedMsgType": "chat",
+      "metadata": null,
+      "ack": null,
+      "chatName": "+57 313 4614219"
+    }
+  ],
+  "instanceId": "231311"
+}
+
+
+######## RECIBIR UBICACIÓN ########
+{
+  "messages": [
+    {
+      "id": "false_573134614219@c.us_9B099860E0C370FB7179D9AD0A53A763",
+      "body": "4.7017714;-74.0977876",
+      "fromMe": false,
+      "self": 0,
+      "isForwarded": 0,
+      "author": "573134614219@c.us",
+      "time": 1651177039,
+      "chatId": "573134614219@c.us",
+      "messageNumber": 142,
+      "type": "location",
+      "senderName": "Albeiro N\u00fa\u00f1ez",
+      "caption": null,
+      "quotedMsgBody": null,
+      "quotedMsgId": null,
+      "quotedMsgType": null,
+      "metadata": null,
+      "ack": null,
+      "chatName": "+57 313 4614219"
+    }
+  ],
+  "instanceId": "231311"
+}
+HTTP POST /webhook/ 200 [0.00, 127.0.0.1:36924]
+
+######## ENVIAR MENSAJE DE TEXTO ########
+{
+  "messages": [
+    {
+      "id": "true_573134614219@c.us_3EB04498753086B19419",
+      "body": "Pero bueno, as\u00ed es que debe ser.",
+      "fromMe": true,
+      "self": 1,
+      "isForwarded": 0,
+      "author": "573107767087@c.us",
+      "time": 1651243643,
+      "chatId": "573134614219@c.us",
+      "messageNumber": 127,
+      "type": "chat",
+      "senderName": "WhatsApp Pruebas",
+      "caption": null,
+      "quotedMsgBody": null,
+      "quotedMsgId": null,
+      "quotedMsgType": null,
+      "metadata": null,
+      "ack": null,
+      "chatName": "+57 313 4614219"
+    }
+  ],
+  "instanceId": "231311"
+}
+
+HTTP POST /webhook/ 200 [0.00, 127.0.0.1:36728]
+
+######## ENTREGA DEL MENSAJE DE TEXTO ########
+{
+  "ack": [
+    {
+      "id": "true_573134614219@c.us_3EB0B0B621E2F48AC518",
+      "queueNumber": 50,
+      "chatId": "573134614219@c.us",
+      "status": "delivered"
+    }
+  ],
+  "instanceId": "231311"
+}
+HTTP POST /webhook/ 200 [0.00, 127.0.0.1:36728]
+
+######## MENSAJE DE TEXTO LEIDO ########
+{
+  "ack": [
+    {
+      "id": "true_573134614219@c.us_3EB0B0B621E2F48AC518",
+      "queueNumber": 50,
+      "chatId": "573134614219@c.us",
+      "status": "viewed"
+    }
+  ],
+  "instanceId": "231311"
+}
+HTTP POST /webhook/ 200 [0.00, 127.0.0.1:36728]
+
+{
+  'chatUpdate': [
+    {
+      'old': None, 
+      'new': {
+        'id': '573134614219@c.us',
+        'name': '+57 313 4614219', 
+        'metadata': {
+          'isGroup': False,
+          'participants': [],
+          'admins': [], 
+          'participantsInfo': [], 
+          'groupInviteLink': None
+        },
+        'last_time': 1652110608,
+        'image': ''
+      }
+    }
+  ],
+    'instanceId': '231311'
+}

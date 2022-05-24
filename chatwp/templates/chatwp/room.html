@@ -1,0 +1,577 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+    <style>
+        body {
+            background: #EEEEEE;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        #chat2 .form-control {
+            border-color: transparent;
+        }
+
+        #chat2 .form-control:focus {
+            border-color: transparent;
+            box-shadow: inset 0px 0px 0px 1px transparent;
+        }
+
+        .divider:after,
+        .divider:before {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #eee;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        #cover-spin {
+            position:fixed;
+            width:100%;
+            left:0;right:0;top:0;bottom:0;
+            background-color: rgba(255,255,255,0.7);
+            z-index:9999;
+            display:none;
+        }
+
+        .badge-dot {
+            border-radius: 50%;
+            height: 10px;
+            width: 10px;
+            margin-left: 2.9rem;
+            margin-top: -.75rem;
+        }
+        .chat-selected {
+          background-color: #e8e8e8;
+        }
+        
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+
+<div id="cover-spin"></div>
+
+<div class="container py-5">
+
+    <div class="row">
+      <div class="col-md-12 col-lg-12 col-xl-12">
+
+        <div class="card" id="chat3" style="border-radius: 15px;">
+          <div class="card-body">
+
+            <div class="row">
+              <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+
+                <div class="p-3">
+
+                  <div class="input-group rounded mb-3">
+                    <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search"
+                      aria-describedby="search-addon" />
+                    <span class="input-group-text border-0" id="search-addon">
+                      <i class="fas fa-search"></i>
+                    </span>
+                  </div>
+
+                  <div class="overflow-auto" data-mdb-perfect-scrollbar="true" style="position: relative; height: 400px">
+                    <ul class="list-unstyled mb-0" id="list-chats">
+                      {% for conversation in conversations %}
+                      <li class="p-2 border-bottom" id="{{conversation.chat_id}}">
+                        <a class="d-flex justify-content-between">
+                          <div class="d-flex flex-row">
+                            <div>
+                              <img
+                                src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                                alt="avatar" class="d-flex align-self-center me-3" width="60">
+                              <span class="badge bg-success badge-dot"></span>
+                            </div>
+                            <div class="pt-1">
+                              <p class="fw-bold mb-0">{{conversation.chat_name}}</p>
+                              <p class="small text-muted">{{conversation.last_msn}}</p>
+                            </div>
+                          </div>
+                          <div class="pt-1">
+                            <p class="small text-muted mb-1">{{conversation.get_time_last_message}}</p>
+                            <span class="badge bg-danger rounded-pill float-end" 
+                              {% if conversation.unread_msn == 0 %} 
+                              style="display: none;" 
+                              {% endif %}>
+                              {{conversation.unread_msn}}
+                            </span>
+                          </div>
+                        </a>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="col-md-6 col-lg-7 col-xl-8">
+
+                <div class="pt-3 pe-3 overflow-auto" data-mdb-perfect-scrollbar="true"
+                  style="position: relative; height: 400px" id="chat-messages">
+                  <div id="message-loader" style="display: none;"><i class="fa-solid fa-loader"></i></div>
+                  <div id="message-container">
+
+                  </div>
+                </div>
+
+                <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
+                    <input type="text" class="form-control" id="chat-message-input"
+                        placeholder="Mensaje">
+                    <a class="ms-3" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-paperclip"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        <label class="dropdown-item" for="file-galeria">
+                            <a class="me-1 ms-1 text-muted"><i class="far fa-file-image"></i> Galería</a>
+                        </label>
+                        <label class="dropdown-item" for="file-documento">
+                            <a class="me-1 ms-1 text-muted"><i class="far fa-file-alt"></i> Documento</a>
+                        </label>
+                        <label class="dropdown-item" for="file-audio">
+                            <a class="me-1 ms-1 text-muted"><i class="fas fa-headphones-alt"></i> Audio</a>
+                        </label>
+                    </div>
+                    <a class="ms-3 text-muted" href="#!"><i class="fas fa-microphone"></i></a>
+                    <a class="ms-3" id="chat-message-submit">
+                        <i class="fas fa-paper-plane"></i>
+                    </a>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+<input type="file" id="file-galeria" accept="image/*" style="display: none;">
+<input type="file" id="file-documento" ac style="display: none;">
+<input type="file" id="file-audio" accept="audio/*" style="display: none;">
+
+<!-- Modal para enviar imagen -->
+<div class="modal fade" id="modalEnviaGaleria" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Enviar galería</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+            <div class="modal-body">
+                <div class="d-flex justify-content-center">
+                    <img id="previewImg"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-md-12 text-muted d-flex justify-content-start align-items-center p-2">
+                    <input type="text" class="form-control" id="description-galeria"
+                    placeholder="Mensaje">
+                    <a class="ms-3" id="enviar-galeria">
+                        <i class="fas fa-paper-plane"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+{% block extra_js %}
+<script>
+    const roomName = '573134614219'
+    const numeroId = '573134614219'
+
+    const chatSocket = new WebSocket(
+        'ws://'
+        + window.location.host
+        + '/ws/'
+        + roomName
+        + '/'
+    )
+
+    /**
+     * Esta función se ejecuta cuando una notificación, por medio del webhook de chat-api, llega.
+    */
+    chatSocket.onmessage = e => {
+
+      const data = JSON.parse(e.data)
+      // Hay tres tipos de notificación:
+      // messages: si un mensaje, ya sea saliente o entrante, llega.
+      // ack: cambio del estado de un mensaje, si fue enviado, recibido o leido.
+      // chat_update: actualización de un chat (dialogo, conversation), ya sea si se eliminó del whatsapp un chat o si un número nuevo escribió.
+
+      if(data.notification_type === "messages"){
+        messageNotificaction(data.data)
+      } else if (data.notification_type === "ack") {
+
+      } else if (data.notification_type === "chat_update") {
+        if (data.data.chatUpdate[0].new) {
+          let newChat = `
+          <li class="p-2 border-bottom" id="${data.data.chatUpdate[0].new.id}">
+            <a class="d-flex justify-content-between">
+              <div class="d-flex flex-row">
+                <div>
+                  <img
+                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp"
+                    alt="avatar" class="d-flex align-self-center me-3" width="60">
+                  <span class="badge bg-success badge-dot"></span>
+                </div>
+                <div class="pt-1">
+                  <p class="fw-bold mb-0">${data.data.chatUpdate[0].new.name}</p>
+                  <p class="small text-muted"></p>
+                </div>
+              </div>
+              <div class="pt-1">
+                <p class="small text-muted mb-1"></p>
+                <span class="badge bg-danger rounded-pill float-end">0</span>
+              </div>
+            </a>
+          </li>
+          `
+          document.getElementById('list-chats').innerHTML += newChat
+        }
+      }
+    }
+
+    /**
+     * Función que se ejecuta si llega una notificación de mensaje.
+     * @param {Object} data - El json que llega de con los datos del mensaje.
+    */
+    const messageNotificaction = data => {
+      const  chatSelected = document.getElementsByClassName('chat-selected')[0]
+      if (chatSelected === undefined){
+        console.log("Ningún chat selectcinado")
+        updateChatBox(data)
+      } else {
+        if(chatSelected.id != data.messages[0].chatId) { 
+          console.log("Chat seleccionado diferente al que llegó la notificación")
+          updateChatBox(data)
+        } else {
+          console.log("Chat seleccionado igual al de la notificación.")
+          updateChat(data)
+        }
+      }
+    }
+
+    /**
+     * Función para actualizar la caja de chat si la notificación que llega no es del chat que se tiene activo.
+     * @param {Object} data - El json que llega de con los datos del mensaje.
+    */
+    const updateChatBox = data => {
+      const chat = document.getElementById(data.messages[0].chatId)
+      const message = chat.querySelectorAll('.small.text-muted')[0]
+      const time = chat.querySelectorAll('.small.text-muted.mb-1')[0]
+      const unread_msn = chat.querySelectorAll('.bg-danger')[0]
+      if(data.messages[0].body.length>45){
+        message.innerHTML = data.messages[0].body.slice(0,45) + "..."
+      } else {
+        message.innerHTML = data.messages[0].body
+      }
+      let timeStamp = parseInt(data.messages[0].time)
+      let date = new Date(timeStamp * 1000)
+      let hours = date.getHours()
+      let minutes = "0" + date.getMinutes()
+      let formattedTime = hours + ':' + minutes.substr(-2)
+      time.innerHTML = formattedTime
+      let unread_msn_text = unread_msn.textContent
+      unread_msn_text = parseInt(unread_msn_text)
+      unread_msn_text += 1
+      unread_msn.textContent = unread_msn_text
+      unread_msn.style.display = "block"
+      let ul = chat.parentNode
+      ul.removeChild(chat)
+      ul.prepend(chat)
+    }
+
+    /**
+     * Función para actualizar la caja de chat y el chat si la notificación que llega es del chat que se tiene activo.
+     * @param {Object} data - El json que llega de con los datos del mensaje.
+    */
+    const updateChat = data => {
+      const chat = document.getElementById(data.messages[0].chatId)
+      const message = chat.querySelectorAll('.small.text-muted')[0]
+      const time = chat.querySelectorAll('.small.text-muted.mb-1')[0]
+      if(data.messages[0].body.length>45){
+        message.innerHTML = data.messages[0].body.slice(0,45) + "..."
+      } else {
+        message.innerHTML = data.messages[0].body
+      }
+      const timeStamp = parseInt(data.messages[0].time)
+      const date = new Date(timeStamp * 1000)
+      const hours = date.getHours()
+      const minutes = "0" + date.getMinutes()
+      const formattedTime = hours + ':' + minutes.substr(-2)
+      data.messages[0].created = formattedTime
+      time.innerHTML = formattedTime
+      let ul = chat.parentNode
+      ul.removeChild(chat)
+      ul.prepend(chat)
+
+      data.messages[0].from_me = data.messages[0].fromMe
+      const newMessage = createMessage(data.messages[0])                   
+      const messageContainer = document.querySelector('#message-container')
+      messageContainer.appendChild(newMessage)
+      chatMessages = document.querySelector('#chat-messages')
+      chatMessages.scrollTop =  chatMessages.scrollHeight
+    }
+
+    chatSocket.onclose = e => {
+        console.log('onclose')
+    }
+
+
+    document.querySelector('#chat-message-input')
+      .addEventListener('keyup', async (e) => {
+        if (e.code==='Enter') {
+            e.preventDefault()
+            const messageInputDom = document.querySelector('#chat-message-input')
+            const message = messageInputDom.value
+
+            const  chatSelected = document.getElementsByClassName('chat-selected')[0]
+
+            let data = {
+                'message' : message,
+                'chatId' : chatSelected.id
+            }
+            let str_url = window.location.origin + '/chat/send_message/'
+            let url = new URL(str_url)
+
+            let resultado = await fetch(url, {
+                method: "POST",
+                body: JSON.stringify(data),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+
+            if (resultado.status == 200) {
+                console.log('Mensaje enviado')
+            }
+
+            messageInputDom.value = ''
+        }
+      })
+
+    document.getElementById('file-galeria').addEventListener('change', (e) => {
+        const fileInput = document.querySelector('#file-galeria')
+        const file = fileInput.files[0]
+        const reader = new FileReader()
+        reader.onload = () => {
+            document.getElementById('previewImg').setAttribute("src", reader.result)
+        }
+        reader.readAsDataURL(file)
+        $('#modalEnviaGaleria').modal('show')
+    })
+    
+    document.getElementById('enviar-galeria').addEventListener('click', async (e) => {
+        $('#modalEnviaGaleria').modal('hide')
+        $('#cover-spin').show()
+        let = mensaje = document.getElementById('description-galeria')
+        const mensajeGaleria = mensaje.value
+        const fileInput = document.querySelector('#file-galeria')
+        const file = fileInput.files[0]
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('caption', mensajeGaleria)
+        formData.append('chatId', roomName)
+
+        const options = {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        }
+
+        let strl_url = window.location.origin + '/chat/send_media/'
+        let url = new URL(strl_url)
+        let respuesta = await fetch(url, options)
+        respuesta = await respuesta.json()
+        const reader = new FileReader()
+        let date = new Date()
+        let hours = date.getHours()
+        let minutes = "0" + date.getMinutes()
+        let formattedTime = hours + ':' + minutes.substr(-2)
+        if(respuesta['sent']){
+            fileInput.value = ''
+            mensaje.value=''
+            let div1 = document.createElement("div")
+            let div2 = document.createElement("div")
+            div2.classList.add("small", "p-2", "me-3", "ms-auto", "text-white", "rounded-3", "bg-primary")
+            div2.style.width = "70%"
+            let div3 = document.createElement("div")
+            div3.classList.add("d-flex", "justify-content-end")
+            let image = document.createElement("img")
+            image.style.width = "100%"
+            reader.onload = () => {
+                image.setAttribute("src", reader.result)
+            }
+            reader.readAsDataURL(file)
+            let p1 = document.createElement("p")
+            p1.classList.add("mt-1", "mb-0")
+            p1.textContent = mensajeGaleria
+            let p2 = document.createElement("p")
+            p2.classList.add("small", "me-3", "mb-2", "rounded-5", "text-muted", "d-flex", "justify-content-end")
+            p2.textContent = formattedTime
+            div3.appendChild(image)
+            div2.appendChild(div3)
+            div2.appendChild(p1)
+            div1.appendChild(div2)
+            div1.appendChild(p2)
+
+            let chatMessages = document.querySelector('#chat-messages')
+            chatMessages.appendChild(div1)
+            chatMessages.scrollTop =  chatMessages.scrollHeight 
+        }
+        $('#cover-spin').hide()
+    })
+
+    /**
+     * Función que se ejecuta al dar click en cualquiera de las cajas de chat.
+     */
+    const clickChat = async (e) => {
+      const element = document.getElementsByClassName('chat-selected')
+      if (element.length > 0) {
+        element[0].classList.remove("chat-selected")
+      }
+      e.currentTarget.classList.add("chat-selected")
+      let url = window.location.origin + "/chat/messages/" + e.currentTarget.id + "/"
+      apiUrl = new URL(url)
+      apiUrl.searchParams.append('page', 1)
+      document.getElementById('message-container').innerHTML = ''
+      document.getElementById("message-loader").style.display = "block"
+      // Se va a al backend a actualizar la conversación
+
+      const unread_msn = e.currentTarget.querySelectorAll('.bg-danger')[0]
+      unread_msn.textContent = 0
+      unread_msn.style.display = "none"
+      let data = {
+        'chat_id' : e.currentTarget.id
+      }
+      let url_update_chat = window.location.origin + "/chat/update_chat/"
+      let response = await fetch(url_update_chat, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              'X-CSRFToken': '{{ csrf_token }}'
+          }
+      })
+      response = await response.json()
+    }
+
+    const boxChat = document.getElementsByTagName("li")
+    for (let i = 0; i < boxChat.length; i++){
+      boxChat[i].addEventListener("click", clickChat)
+    }
+
+    // Scroll infinito para los mensajes
+    let elementIntoView = null
+    const requestTarget = document.getElementById('message-loader')
+    const messagesContariner = document.getElementById('message-container')
+    const intersectionOptions = {
+      threshold: 1
+    }
+    
+    let apiUrl = null
+    let loading = false
+
+    /**
+     * Fución que se ejecuta cuando un elemento, ubicado en la parte de arriba de la caja de mensajes, es visible.
+    */
+    const onIntersect = ([entry]) => {
+      if(apiUrl && !loading && entry.isIntersecting)
+        makeRequest()
+    }
+
+    /**
+     * Función que se ejecuta cuando se cumplen las tres condiciones para ir al backend y consultar más mensajes.
+     */ 
+    const makeRequest = async () => {
+      loading = true
+      let response =  await fetch(apiUrl, {method: 'GET'})
+      response = await response.json()
+      if(!response['success']){
+        apiUrl = null
+        document.getElementById("message-loader").style.display = "none"
+      } else {
+        apiUrl.searchParams.set('page', response.page)
+        renderMessages(response.messages)
+        elementIntoView.scrollIntoView()
+      }
+      loading = false
+    }
+    
+    /**
+     * Función para añadir los mensajes consultados en el backend en el chat.
+     * @param {Array} messages - Mensajes traidos del back end en formato Json
+     */
+    const renderMessages = messages =>{
+      if(messages.length < 6){
+        document.getElementById("message-loader").style.display = "none"
+      }
+      messages.forEach((message, index) => {
+        const newMessage = createMessage(message)
+        if(index == 0) {
+          elementIntoView = newMessage
+        }
+        messagesContariner.prepend(newMessage)
+      })
+    }
+    
+    /**
+     * Función para crear el elemento que pinta el mensaje.
+     * @param {Object} message - Mensaje en formato objecto
+     */ 
+    const createMessage = (message) =>{
+      const newMessage = document.createElement('div')
+      newMessage.setAttribute('id',message.id)
+      if (!message.from_me){
+        newMessage.classList.add("d-flex", "flex-row", "justify-content-start")
+        newMessage.innerHTML = (
+        `
+          <div>
+              <p class="small p-2 ms-3 me-3 mb-1 rounded-5" style="background-color: #f5f6f7;">${message.body}</p>
+              <p class="small ms-3 mb-2 rounded-3 text-muted">${message.created}</p>
+          </div>
+        `)
+
+      } else {
+        newMessage.classList.add("d-flex", "flex-row", "justify-content-end")
+        newMessage.innerHTML = (
+        `
+          <div>
+              <p class="small p-2 me-3 ms-3 mb-1 text-white rounded-3 bg-primary">${message.body}</p>
+              <p class="small me-3 mb-2 rounded-5 text-muted d-flex justify-content-end">${message.created}</p>
+          </div>  
+        `)
+      }
+      return newMessage
+    }
+
+    let observer = new IntersectionObserver(onIntersect, intersectionOptions)
+
+    observer.observe(requestTarget)
+
+</script>
+{% endblock %}
